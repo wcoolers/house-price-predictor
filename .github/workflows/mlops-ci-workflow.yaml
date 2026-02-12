@@ -41,7 +41,20 @@ jobs:
       
       - name: Start MLflow Tracking Server
         run: |
-          docker-compose -f deployment/mlflow/docker-compose.yaml up -d
+          docker compose -f deployment/mlflow/docker-compose.yaml up -d
+
+      - name: Wait for MLflow to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://localhost:5555 > /dev/null; then
+              echo "MLflow is ready"
+              exit 0
+            fi
+            echo "Waiting for MLflow... attempt $i/30"
+            sleep 2
+          done
+          echo "MLflow did not become ready in time"
+          exit 1
 
       - name: Train the Model
         run: |
@@ -53,4 +66,4 @@ jobs:
       
       - name: Cleanup MLflow Tracking Server
         run: |
-          docker-compose -f deployment/mlflow/docker-compose.yaml down
+          docker compose -f deployment/mlflow/docker-compose.yaml down
