@@ -84,6 +84,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: wcoolers/fastapi:{{ github.sha }}
+          tags: wcoolers/fastapi:${{ github.sha }}
           context: .
           file: Dockerfile
